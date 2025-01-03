@@ -1,4 +1,4 @@
-import { App, MarkdownView, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { App, MarkdownView, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 
 enum VimMode {
 	None,
@@ -59,7 +59,7 @@ export default class WitchKeyPlugin extends Plugin {
 				break;
 		}
 
-		console.log("vim mode set: ", this.vimMode);
+		new Notice(ev.mode);
 	};
 
 	private setupVimHandlers() {
