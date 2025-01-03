@@ -32,6 +32,24 @@ export default class WitchKeyPlugin extends Plugin {
 		return codeMirrorEditor;
 	}
 
+	private setLeaderKey() {
+		// Manually the leader key. Hardcoded for now.
+		this.addCommand({
+			id: 'witch-key-leader',
+			name: 'Witch Key',
+			repeatable: false,
+			callback: () => {
+				new Notice('space pressed!')
+			},
+			hotkeys: [{modifiers: [], key: ' '}]
+		});
+	}
+
+	private unsetLeaderKey() {
+		this.removeCommand('witch-key-leader');
+	}
+
+
 	private syncVimModeOnChange = (ev: {
 		mode: "insert" | "normal" | "visual" | "replace";
 	}): void => {
@@ -44,18 +62,23 @@ export default class WitchKeyPlugin extends Plugin {
 		switch (ev.mode) {
 			case "insert":
 				this.vimMode = VimMode.Insert;
+				this.unsetLeaderKey();
 				break;
 			case "normal":
 				this.vimMode = VimMode.Normal;
+				this.setLeaderKey();
 				break;
 			case "visual":
 				this.vimMode = VimMode.Visual;
+				this.unsetLeaderKey();
 				break;
 			case "replace":
 				this.vimMode = VimMode.Replace;
+				this.unsetLeaderKey();
 				break;
 			default:
 				this.vimMode = VimMode.None;
+				this.unsetLeaderKey();
 				break;
 		}
 
@@ -64,6 +87,7 @@ export default class WitchKeyPlugin extends Plugin {
 
 	private setupVimHandlers() {
 		const view = this.getActiveView();
+
 		if (view) {
 			this.vimMode = VimMode.None;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,6 +102,7 @@ export default class WitchKeyPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new WitchKeySettingTab(this.app, this));
+
 
 		const view = this.getActiveView();
 
@@ -101,6 +126,8 @@ export default class WitchKeyPlugin extends Plugin {
 				console.log("file-open");
 				this.setupVimHandlers();
 			});
+
+			return;
 		}
 
 		this.setupVimHandlers();
